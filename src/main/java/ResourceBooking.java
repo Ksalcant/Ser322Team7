@@ -1,12 +1,12 @@
 import java.sql.*;
 import java.util.Scanner;
-​
+
 public class ResourceBooking {
-​
+
     private static final String DB_URL = "jdbc:mysql://localhost:3306/your_database";
     private static final String USER = "username";
     private static final String PASS = "password";
-​
+
     public static void main(String[] args) {
         try (Connection conn = DriverManager.getConnection(DB_URL, USER, PASS)) {
             Scanner scanner = new Scanner(System.in);
@@ -25,9 +25,9 @@ public class ResourceBooking {
                 System.out.println("11: Create a new user.");
                 System.out.println("12: Update a user.");
                 System.out.println("0: Exit.");
-​
+
                 int choice = scanner.nextInt();
-​
+
                 switch (choice) {
                     case 1:
                         getNextFreeTimeSlot(conn);
@@ -75,9 +75,9 @@ public class ResourceBooking {
             e.printStackTrace();
         }
     }
-​
-​
-​
+
+
+
 private static void getPeakUsageTime(Connection conn) throws SQLException {
     String sql = "SELECT BookingStartTime, COUNT(*) as Frequency FROM Booking WHERE ResourceID = 1 AND BookingDate >= DATE_ADD(CURRENT_DATE, INTERVAL -1 MONTH) GROUP BY BookingStartTime ORDER BY Frequency DESC LIMIT 1;";
     try (Statement stmt = conn.createStatement()) {
@@ -89,7 +89,7 @@ private static void getPeakUsageTime(Connection conn) throws SQLException {
         }
     }
 }
-​
+
 private static void getUserWithMostHours(Connection conn) throws SQLException {
     String sql = "SELECT User.UserID, User.UserName, SUM(TIMESTAMPDIFF(HOUR, Booking.BookingStartTime, Booking.BookingEndTime)) as TotalBookingHours FROM Booking INNER JOIN User ON Booking.UserID = User.UserID WHERE Booking.ResourceID = 1 GROUP BY User.UserID, User.UserName ORDER BY TotalBookingHours DESC LIMIT 1;";
     try (Statement stmt = conn.createStatement()) {
@@ -101,7 +101,7 @@ private static void getUserWithMostHours(Connection conn) throws SQLException {
         }
     }
 }
-​
+
 private static void countUnicorns(Connection conn) throws SQLException {
     String sql = "SELECT COUNT(*) FROM Resource WHERE ResourceName = 'unicorn';";
     try (Statement stmt = conn.createStatement()) {
@@ -113,7 +113,7 @@ private static void countUnicorns(Connection conn) throws SQLException {
         }
     }
 }
-​
+
 private static void addUnicorn(Connection conn) throws SQLException {
     String sql = "INSERT INTO Resource(ResourceID, ResourceName, ResourceDescription, ResourceStatus, MaintenanceStatus) VALUES (6, 'unicorn', 'rainbows and unicorns', 'Booked', 'Requires Maintenance');";
     try (Statement stmt = conn.createStatement()) {
@@ -121,7 +121,7 @@ private static void addUnicorn(Connection conn) throws SQLException {
         System.out.println(rowsAffected + " rows affected.");
     }
 }
-​
+
 private static void getUnderUtilizedResource(Connection conn) throws SQLException {
     String sql = "SELECT Resource.ResourceName, SUM(TIMESTAMPDIFF(HOUR, Booking.BookingStartTime, Booking.BookingEndTime)) as TotalBookingHours FROM Booking INNER JOIN Resource ON Booking.ResourceID = Resource.ResourceID GROUP BY Booking.ResourceID, Resource.ResourceName ORDER BY TotalBookingHours ASC;";
     try (Statement stmt = conn.createStatement()) {
@@ -133,7 +133,7 @@ private static void getUnderUtilizedResource(Connection conn) throws SQLExceptio
         }
     }
 }
-​
+
 private static void getLastUseOfInvisibilityCloak(Connection conn) throws SQLException {
     String sql = "SELECT Booking.BookingDate, Booking.BookingStartTime, Booking.BookingEndTime FROM Booking INNER JOIN Resource ON Booking.ResourceID = Resource.ResourceID WHERE Resource.ResourceName = 'Invisibility Cloak' ORDER BY Booking.BookingDate DESC, Booking.BookingEndTime DESC LIMIT 1;";
     try (Statement stmt = conn.createStatement()) {
@@ -145,7 +145,7 @@ private static void getLastUseOfInvisibilityCloak(Connection conn) throws SQLExc
         }
     }
 }
-​
+
 private static void getAllBookedResources(Connection conn) throws SQLException {
     String sql = "SELECT Resource.ResourceID, Resource.ResourceName, COUNT(*) as TotalBookings FROM Booking INNER JOIN Resource ON Booking.ResourceID = Resource.ResourceID GROUP BY Resource.ResourceID, Resource.ResourceName;";
     try (Statement stmt = conn.createStatement()) {
@@ -155,7 +155,7 @@ private static void getAllBookedResources(Connection conn) throws SQLException {
         }
     }
 }
-​
+
 private static void createNewUser(Connection conn) throws SQLException {
     String sql = "INSERT INTO User(UserID, UserName, UserEmail, UserPassword, UserContact, Role) VALUES (6, 'Danny DataCruncher', 'dannydatacruncher@email.com', '24680', '10 Binary Boulevard', 'user');";
     try (Statement stmt = conn.createStatement()) {
@@ -163,7 +163,7 @@ private static void createNewUser(Connection conn) throws SQLException {
         System.out.println(rowsAffected + " rows affected.");
     }
 }
-​
+
 private static void updateUser(Connection conn) throws SQLException {
     String sql = "UPDATE User SET UserName = 'Danny DataCruncher', UserEmail = 'dannydatacruncher_new@email.com', UserPassword = '02468', UserContact = '20 Binary Boulevard', Role = 'admin' WHERE UserID = 6;";
     try (Statement stmt = conn.createStatement()) {
@@ -171,7 +171,7 @@ private static void updateUser(Connection conn) throws SQLException {
         System.out.println(rowsAffected + " rows affected.");
     }
 }
-​
+
 private static void getNextFreeTimeSlot(Connection conn) throws SQLException {
     String sql = "SELECT DATE_ADD(BookingDate, INTERVAL 1 DAY) as FreeDate FROM Booking WHERE ResourceID = 1 AND (BookingEndTime <= '01:00:00' OR BookingStartTime >= '05:00:00') ORDER BY BookingDate DESC LIMIT 1;";
     try (Statement stmt = conn.createStatement()) {
@@ -183,7 +183,7 @@ private static void getNextFreeTimeSlot(Connection conn) throws SQLException {
         }
     }
 }
-​
+
 private static void getLastMaintenanceDate(Connection conn) throws SQLException {
     String sql = "SELECT MaintenanceDate FROM Maintenance WHERE ResourceID = 4 ORDER BY MaintenanceDate DESC LIMIT 1;";
     try (Statement stmt = conn.createStatement()) {
@@ -195,7 +195,7 @@ private static void getLastMaintenanceDate(Connection conn) throws SQLException 
         }
     }
 }
-​
+
 private static void getAvgHoursPerWeek(Connection conn) throws SQLException {
     String sql = "SELECT AVG(BookingHoursPerWeek) as AverageWeeklyBookingHours FROM (SELECT WEEK(BookingDate) as BookingWeek, SUM(TIMESTAMPDIFF(HOUR, BookingStartTime, BookingEndTime)) as BookingHoursPerWeek FROM Booking WHERE ResourceID = 1 GROUP BY WEEK(BookingDate)) as weeklyBookingHours;";
     try (Statement stmt = conn.createStatement()) {
@@ -207,7 +207,4 @@ private static void getAvgHoursPerWeek(Connection conn) throws SQLException {
         }
     }
 }
-​
-​
-​
 }
