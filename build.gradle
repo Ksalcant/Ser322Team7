@@ -1,5 +1,5 @@
 apply plugin: 'application'
-mainClassName = 'Main'
+mainClassName = 'ResourceBooking'
 
 repositories {
 	jcenter()
@@ -9,6 +9,6 @@ task runLab(type: JavaExec) {
 
 classpath = sourceSets.main.runtimeClasspath
 
-main = 'Main'
+main = 'ResourceBooking'
 
 }
